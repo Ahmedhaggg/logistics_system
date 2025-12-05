@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2023",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@module/*": ["modules/*"],
+      "@common/*": ["common/*"],
+      "@utils/*": ["common/utils/*"],
+      "@repository/*": ["common/repository/*"],
+      "@guards/*": ["common/guards/*"],
+      "@types/*": ["common/types/*"],
+      "@shared/*": ["shared/*"],
+      "@db/*": ["db/*"]
+    },
+    "typeRoots": ["./node_modules/@types", "src/common/types"],
+    "types": ["jest", "node", "express"],
+    "resolveJsonModule": true
+  },
+  "include": ["src"]
+}

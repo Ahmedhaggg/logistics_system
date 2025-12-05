@@ -1,0 +1,16 @@
+services:
+  redis-ws:
+    container_name: redis-ws
+    image: redis:latest
+    ports:
+      - 6379:6379
+  db:
+    container_name: db
+    restart: always
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: mydb
