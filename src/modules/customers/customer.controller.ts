@@ -51,6 +51,7 @@ export class CustomerController {
   @Delete(':id')
   @Roles(Role.MANAGER)
   remove(@Param('id') id: string) {
+    console.log("id", id)
     return this.customerService.delete(id);
   }
 }
