@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CacheModule } from '@nestjs/cache-manager';
 import { UserStatusRepository } from '../repositories/userStatus.repository';
 import { UserStatusService } from '../services/userStatus.service';
-import { DbModule } from '@common/db';
+import { DbModule } from 'database/index';
 import { faker } from '@faker-js/faker/.';
-import { UserRepository } from '@module/users/user.repository';
-import { seedUserData } from '@module/auth/test/user.seed';
+import { seedUserData } from 'core/auth/test/user.seed';
+import { UserRepository } from '@core/users/repositories/user.repository';
 
 // TODO to Fix The Failed Test Cases Must insert users to users tables
 describe('UserStatusService (Integration)', () => {

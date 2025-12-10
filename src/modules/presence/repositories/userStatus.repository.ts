@@ -1,4 +1,4 @@
-import { DB, injectDB } from '@common/db/provider';
+import { DB, injectDB } from 'database/provider';
 import { Injectable } from '@nestjs/common';
 import {
   CreateUserStatus,

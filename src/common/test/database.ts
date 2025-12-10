@@ -1,4 +1,3 @@
-import { User } from '@module/users/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 import { SharedModule } from '@shared/config.module';

@@ -25,7 +25,8 @@
       "@guards/*": ["common/guards/*"],
       "@types/*": ["common/types/*"],
       "@shared/*": ["shared/*"],
-      "@db/*": ["db/*"]
+      "@db/*": ["db/*"],
+      "@core/*": ["core/*"]
     },
     "typeRoots": ["./node_modules/@types", "src/common/types"],
     "types": ["jest", "node", "express"],
