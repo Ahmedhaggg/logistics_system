@@ -24,7 +24,9 @@ export class TokenService {
     return { accessToken, refreshToken };
   }
 
-  async validateAndRotateRefreshToken(token: string): Promise<User & { roles: UserRole[] }> {
+  async validateAndRotateRefreshToken(
+    token: string,
+  ): Promise<User & { roles: UserRole[] }> {
     const userId = await this.refreshTokenService.validateAndRotate(token);
 
     const user = await this.userRepository.findById(userId);

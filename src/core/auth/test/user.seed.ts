@@ -31,4 +31,5 @@ export const seedRefreshTokenData = (
   expiresAt: new Date(Date.now() + 100000),
   isRevoked: false,
   createdAt: new Date(),
+  updatedAt: new Date(),
 });

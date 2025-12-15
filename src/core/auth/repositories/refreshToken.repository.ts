@@ -3,8 +3,8 @@ import {
   RefreshToken,
 } from '../entities/refreshToken.entity';
 import { Injectable } from '@nestjs/common';
-import { DB, injectDB } from 'database/provider';
-import { refreshTokens } from 'database/schema';
+import { DB, injectDB } from '@db/provider';
+import { refreshTokens } from '@db/schema';
 import { eq, SQL, and } from 'drizzle-orm';
 
 @Injectable()

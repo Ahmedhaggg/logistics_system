@@ -1,4 +1,3 @@
-import { DB, injectDB } from 'database/provider';
 import { Injectable } from '@nestjs/common';
 import {
   CreateUserStatus,
@@ -6,6 +5,7 @@ import {
   UserStatus,
 } from '../entities/userStatus.entity';
 import { eq } from 'drizzle-orm';
+import { DB, injectDB } from '@db/provider';
 
 @Injectable()
 export class UserStatusRepository {

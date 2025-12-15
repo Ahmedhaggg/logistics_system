@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Delete, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Delete,
+  Get,
+  Query,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Roles } from '@common/decorators/roles.decorator';
 import { RolesGuard } from '@common/guards/roles.guard';
@@ -30,8 +38,7 @@ export class UsersController {
   //   return { users };
   // }
 
-
-  @Get("/")
+  @Get('/')
   async findAll(@Query() query: FindUserDto) {
     const users = await this.usersService.findByQuery(query);
 

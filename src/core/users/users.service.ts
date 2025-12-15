@@ -8,8 +8,8 @@ import { UserRepository } from './repositories/user.repository';
 import { UserRoleRepository } from './repositories/user-role.repository';
 import { UserRole } from './entities/user_role.entity';
 import { FindUserDto } from './dto/find-users.dto';
-import { users, userRoles } from '../../database/schema';
-import { DB, injectDB } from 'database/provider';
+import { users, userRoles } from '@db/schema';
+import { DB, injectDB } from '@db/provider';
 
 @Injectable()
 export class UsersService {
@@ -29,11 +29,14 @@ export class UsersService {
    * @param user User entity data to insert.
    * @param role Role to assign to the new user.
    */
-  async createUser(user: any, role: UserRole["role"]) {
+  async createUser(user: any, role: UserRole['role']) {
     return this.db.transaction(async (tx) => {
       const insertedUsers = await tx.insert(users).values(user).returning();
       const newUser = insertedUsers[0];
-      await tx.insert(userRoles).values({ userId: newUser.id, role }).returning();
+      await tx
+        .insert(userRoles)
+        .values({ userId: newUser.id, role })
+        .returning();
       return newUser;
     });
   }

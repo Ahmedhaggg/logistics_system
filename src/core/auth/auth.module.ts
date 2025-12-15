@@ -26,7 +26,7 @@ import { UserRoleRepository } from '@core/users/repositories/user-role.repositor
     TokenService,
     RefreshTokenService,
     UserRepository,
-    UserRoleRepository
+    UserRoleRepository,
   ],
   controllers: [AuthController],
 })

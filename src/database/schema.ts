@@ -1,35 +1,53 @@
-import { pgTable, uuid, unique, pgEnum, timestamp, varchar, boolean, real } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  pgEnum,
+  timestamp,
+  varchar,
+  boolean,
+  real,
+  date,
+  unique,
+  uniqueIndex,
+  time,
+} from 'drizzle-orm/pg-core';
 
-export const userRoleEnum = pgEnum("user_role", [
-  "CUSTOMER",
-  "DRIVER",
-  "MANAGER",
-  "WAREHOUSE_STAFF",
+const timestamps = {
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+};
+
+export const userRoleEnum = pgEnum('user_role', [
+  'CUSTOMER',
+  'DRIVER',
+  'MANAGER',
+  'WAREHOUSE_STAFF',
 ]);
 
-export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  imageUrl: varchar("image_url", { length: 255 }),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  phone: varchar("phone", { length: 20 }),
-  passwordHash: varchar("password_hash", { length: 255 }),
-  fullName: varchar("full_name", { length: 100 }),
+export const users = pgTable('users', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  imageUrl: varchar('image_url', { length: 255 }),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  phone: varchar('phone', { length: 20 }),
+  passwordHash: varchar('password_hash', { length: 255 }),
+  fullName: varchar('full_name', { length: 100 }),
+  ...timestamps,
 });
 
 export const userRoles = pgTable(
-  "user_roles",
+  'user_roles',
   {
-    id: uuid("id").primaryKey().defaultRandom(),
-    userId: uuid("user_id").notNull().references(() => users.id, {
-      onDelete: "cascade",
-    }),
-    role: userRoleEnum("role").notNull(),
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, {
+        onDelete: 'cascade',
+      }),
+    role: userRoleEnum('role').notNull(),
   },
   (table) => ({
-    uniqueUserRole: unique("unique_user_role").on(table.userId, table.role),
-  })
+    uniqueUserRole: unique('unique_user_role').on(table.userId, table.role),
+  }),
 );
 
 export const refreshTokens = pgTable('refresh_tokens', {
@@ -39,9 +57,7 @@ export const refreshTokens = pgTable('refresh_tokens', {
     .notNull(),
   token: varchar().notNull(),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true })
-    .defaultNow()
-    .notNull(),
+  ...timestamps,
   isRevoked: boolean('is_revoked').default(false).notNull(),
 });
 
@@ -54,29 +70,76 @@ export const warehouses = pgTable('warehouses', {
   longitude: real('longitude').notNull(),
 });
 
-
-export const warehouseStaff = pgTable(
-  "warehouse_staff",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
-    warehouseId: uuid("warehouse_id").references(() => warehouses.id, {
-      onDelete: "set null",
-    }),
-    position: varchar("position", { length: 50 }),
-  },
-  (table) => ({
-    uniqueStaffUser: unique("unique_warehouse_staff_user").on(table.userId),
-  })
-);
-
-export const presenceStatusEnum = pgEnum("presence_status", [
-  "online",
-  "offline",
+export const presenceStatusEnum = pgEnum('presence_status', [
+  'online',
+  'offline',
 ]);
 
-export const userPresence = pgTable("user_presence", {
-  userId: uuid("user_id").references(() => users.id).primaryKey(),
-  status: presenceStatusEnum("status").notNull().default("offline"),
-  lastSeen: timestamp("last_seen").defaultNow(),
+export const userPresence = pgTable('user_presence', {
+  userId: uuid('user_id')
+    .references(() => users.id)
+    .primaryKey(),
+  status: presenceStatusEnum('status').notNull().default('offline'),
+  lastSeen: timestamp('last_seen').defaultNow(),
+  ...timestamps,
 });
+
+export const employees = pgTable('employees', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  birthday: timestamp('birthday', { withTimezone: true }).notNull(),
+  shiftStartTime: time('shift_start_time').notNull(),
+  shiftEndTime: time('shift_end_time').notNull(),
+  salary: real('salary').notNull(),
+  ...timestamps,
+});
+
+export const drivers = pgTable(
+  'drivers',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    employeeId: uuid('employee_id')
+      .notNull()
+      .references(() => employees.id, { onDelete: 'cascade' }),
+    driverLicenseUrl: varchar('driver_license_url', { length: 255 }),
+    approvedAt: timestamp('approved_at', { withTimezone: true }),
+    ...timestamps,
+  },
+  (table) => [uniqueIndex('unique_driver_idx').on(table.employeeId)],
+);
+
+export const driverApplicationStatusEnum = pgEnum('driver_application_status', [
+  'PENDING',
+  'APPROVED',
+  'REJECTED',
+]);
+
+export const driverApplications = pgTable('driver_applications', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  birthday: timestamp('birthday', { withTimezone: true }).notNull(),
+  status: driverApplicationStatusEnum('status').notNull().default('PENDING'),
+  ...timestamps,
+  driverLicenseUrl: varchar('driver_license_url', { length: 255 }).notNull(),
+});
+
+export const warehouseStaff = pgTable(
+  'warehouse_staff',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    employeeId: uuid('employee_id').references(() => employees.id, {
+      onDelete: 'cascade',
+    }),
+    warehouseId: uuid('warehouse_id').references(() => warehouses.id, {
+      onDelete: 'set null',
+    }),
+    ...timestamps,
+  },
+  (table) => ({
+    uniqueStaffUser: unique('unique_warehouse_staff_user').on(table.employeeId),
+  }),
+);

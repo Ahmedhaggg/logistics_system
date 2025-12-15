@@ -15,17 +15,21 @@ export class AuthService {
 
   async loginWithGoogle(googleUser: GoogleUserInfo): Promise<TokenPair> {
     const user = await this.googleAuthService.login(googleUser);
-    return this.tokenService.generateTokenPair(user, user.roles.map(role => role.role as Role));
+    return this.tokenService.generateTokenPair(
+      user,
+      user.roles.map((role) => role.role as Role),
+    );
   }
 
   async refreshToken(token: string): Promise<TokenPair> {
     const user = await this.tokenService.validateAndRotateRefreshToken(token);
-    return this.tokenService.generateTokenPair(user, user.roles.map(role => role.role as Role));
+    return this.tokenService.generateTokenPair(
+      user,
+      user.roles.map((role) => role.role as Role),
+    );
   }
 
   async logout(refreshToken: string): Promise<void> {
     await this.tokenService.revokeRefreshToken(refreshToken);
   }
-
-
 }

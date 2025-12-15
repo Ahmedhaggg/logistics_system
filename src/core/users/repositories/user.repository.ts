@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { DB, injectDB } from 'database/provider';
+import { DB, injectDB } from '@db/provider';
 import { and, eq, SQL } from 'drizzle-orm';
 import { User, InsertUser } from '../entities/user.entity';
-import { users, userRoles } from 'database/schema';
+import { users, userRoles } from '@db/schema';
 import { Role } from '../entities/user_role.entity';
+import { DbTransaction } from '@db/transaction-manager';
 
 @Injectable()
 export class UserRepository {
@@ -33,8 +34,22 @@ export class UserRepository {
     await this.db.update(users).set(user).where(eq(users.id, id));
   }
 
-  async create(user: InsertUser): Promise<User> {
-    const newUser = await this.db.insert(users).values(user).returning();
+  async findByEmail(
+    email: string,
+    transaction?: DbTransaction,
+  ): Promise<User | null> {
+    const db = transaction ?? this.db;
+    const queryResult = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email));
+
+    return queryResult[0] ?? null;
+  }
+
+  async create(user: InsertUser, tx?: DbTransaction): Promise<User> {
+    const db = tx ?? this.db;
+    const newUser = await db.insert(users).values(user).returning();
     return newUser[0];
   }
 
@@ -61,7 +76,7 @@ export class UserRepository {
       .from(users)
       .innerJoin(userRoles, eq(users.id, userRoles.userId))
       .where(eq(userRoles.role, role));
-    
+
     return result;
   }
 }

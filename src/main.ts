@@ -29,6 +29,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   const socketIoAdapter = new RedisIoAdapter(app);
+
   await socketIoAdapter.connectToRedis();
   app.useWebSocketAdapter(socketIoAdapter);
   // start app

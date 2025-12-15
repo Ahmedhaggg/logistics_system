@@ -6,6 +6,8 @@ import { AuthModule } from 'core/auth/auth.module';
 import { DbModule } from 'database/index';
 import { UsersModule } from '@core/users/users.module';
 import { CustomerModule } from './modules/customers/customer.module';
+import { DriversModule } from './modules/drivers/drivers.module';
+import { EmployeesModule } from './modules/employees/employees.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { CustomerModule } from './modules/customers/customer.module';
     UsersModule,
     NotificationsModule,
     CustomerModule,
+    DriversModule,
+    EmployeesModule,
   ],
   controllers: [],
   providers: [AppConfigService],

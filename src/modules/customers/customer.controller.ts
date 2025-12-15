@@ -44,14 +44,17 @@ export class CustomerController {
 
   @Patch(':id')
   @Roles(Role.MANAGER)
-  update(@Param('id') id: string, @Body() updateCustomerDto: UpdateCustomerDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCustomerDto: UpdateCustomerDto,
+  ) {
     return this.customerService.update(id, updateCustomerDto);
   }
 
   @Delete(':id')
   @Roles(Role.MANAGER)
   remove(@Param('id') id: string) {
-    console.log("id", id)
+    console.log('id', id);
     return this.customerService.delete(id);
   }
 }

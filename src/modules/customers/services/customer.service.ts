@@ -16,7 +16,7 @@ export class CustomerService {
     if (!user) {
       throw new NotFoundException(`Customer with ID ${id} not found`);
     }
-    // Ideally we should check if the user actually has the CUSTOMER role, 
+    // Ideally we should check if the user actually has the CUSTOMER role,
     // but for now we assume the ID is correct or the caller handles it.
     // To be safe, we could verify the role here if we had a method for it,
     // or rely on the fact that this service is intended for customers.

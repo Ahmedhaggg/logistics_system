@@ -13,6 +13,7 @@ function configDb(configService: AppConfigService) {
   const pool = new Pool({
     connectionString: configService.get('DB_URL'),
   });
+
   const db = drizzle(pool, { schema });
 
   return db;

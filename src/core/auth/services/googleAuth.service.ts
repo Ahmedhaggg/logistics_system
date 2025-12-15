@@ -7,9 +7,14 @@ import { UserRole } from '@core/users/entities/user_role.entity';
 
 @Injectable()
 export class GoogleAuthService {
-  constructor(private readonly userRepository: UserRepository, private readonly rolesRepository: UserRoleRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly rolesRepository: UserRoleRepository,
+  ) {}
 
-  async login(googleUser: GoogleUserInfo): Promise<User & { roles: UserRole[] }> {
+  async login(
+    googleUser: GoogleUserInfo,
+  ): Promise<User & { roles: UserRole[] }> {
     const email = googleUser.email;
 
     if (!email) throw new UnauthorizedException('Missing Google email');
