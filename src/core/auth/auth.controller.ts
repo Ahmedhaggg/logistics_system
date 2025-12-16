@@ -53,7 +53,8 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleOAuthGuard)
   async googleAuthRedirect(@Req() req: Request & { user: GoogleUserInfo }) {
-    return this.authService.loginWithGoogle(req.user);
+    const { accessToken, refreshToken, onboardingRequired } = await this.authService.loginWithGoogle(req.user);
+    return { accessToken, refreshToken, onboardingRequired };
   }
 
   @ApiOperation({ summary: 'Get user profile' })

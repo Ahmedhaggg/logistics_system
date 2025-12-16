@@ -5,7 +5,7 @@ import { TransactionManager } from '@db/transaction-manager';
 import { faker } from '@faker-js/faker';
 import { DriverApplicationRepository } from '@module/drivers/repositories/driver-application.repository';
 import { DriverRepository } from '@module/drivers/repositories/driver.repository';
-import { DriverService } from '@module/drivers/services/driver.service';
+import { DriverApplicationService } from '@module/drivers/services/driver-application.service';
 import { EmployeeRepository } from '@module/employees/repositories/employee.repository';
 import { TestBed, type Mocked } from '@suites/unit';
 import { fakeDriverApplication, fakeEmployee, fakeUser } from '@test/factory';
@@ -17,7 +17,7 @@ const fakeAcceptDto = () => ({
 });
 
 describe('Driver Service', () => {
-  let driverService: DriverService;
+  let driverApplicationService: DriverApplicationService;
   let userRepository: Mocked<UserRepository>;
   let driverApplicationRepository: Mocked<DriverApplicationRepository>;
   let driverRepository: Mocked<DriverRepository>;
@@ -26,9 +26,9 @@ describe('Driver Service', () => {
   let transactionManager: Mocked<TransactionManager>;
 
   beforeAll(async () => {
-    const { unit, unitRef } = await TestBed.solitary(DriverService).compile();
+    const { unit, unitRef } = await TestBed.solitary(DriverApplicationService).compile();
 
-    driverService = unit;
+    driverApplicationService = unit;
     userRepository = unitRef.get(UserRepository);
     driverApplicationRepository = unitRef.get(DriverApplicationRepository);
     driverRepository = unitRef.get(DriverRepository);
@@ -48,7 +48,7 @@ describe('Driver Service', () => {
       userRepository.findById.mockResolvedValue(null);
 
       await expect(
-        driverService.createApplication(faker.database.mongodbObjectId(), {
+        driverApplicationService.createApplication(faker.database.mongodbObjectId(), {
           birthday: faker.date.past(),
           driverLicenseUrl: faker.image.url(),
         }),
@@ -62,7 +62,7 @@ describe('Driver Service', () => {
       userRepository.findById.mockResolvedValue(fakeUser());
 
       await expect(
-        driverService.createApplication(faker.database.mongodbObjectId(), {
+        driverApplicationService.createApplication(faker.database.mongodbObjectId(), {
           birthday: faker.date.past(),
           driverLicenseUrl: faker.image.url(),
         }),
@@ -77,7 +77,7 @@ describe('Driver Service', () => {
       driverApplicationRepository.findById.mockResolvedValue(null);
       driverApplicationRepository.create.mockResolvedValue(app);
 
-      const result = await driverService.createApplication(user.id, {
+      const result = await driverApplicationService.createApplication(user.id, {
         birthday: app.birthday,
         driverLicenseUrl: app.driverLicenseUrl,
       });
@@ -97,7 +97,7 @@ describe('Driver Service', () => {
       driverApplicationRepository.findById.mockResolvedValue(null);
 
       await expect(
-        driverService.acceptApplication('app-id', fakeAcceptDto()),
+        driverApplicationService.acceptApplication('app-id', fakeAcceptDto()),
       ).rejects.toThrow('Driver application not found');
     });
 
@@ -112,7 +112,7 @@ describe('Driver Service', () => {
         status: 'APPROVED',
       });
 
-      await driverService.acceptApplication(application.id, fakeAcceptDto());
+      await driverApplicationService.acceptApplication(application.id, fakeAcceptDto());
 
       expect(roleRepository.create).toHaveBeenCalledWith(
         {
@@ -135,7 +135,7 @@ describe('Driver Service', () => {
         status: 'APPROVED',
       });
 
-      await driverService.acceptApplication(application.id, dto);
+      await driverApplicationService.acceptApplication(application.id, dto);
 
       expect(employeeRepository.create).toHaveBeenCalledWith(
         {
@@ -160,7 +160,7 @@ describe('Driver Service', () => {
         status: 'APPROVED',
       });
 
-      await driverService.acceptApplication(application.id, fakeAcceptDto());
+      await driverApplicationService.acceptApplication(application.id, fakeAcceptDto());
 
       expect(driverRepository.create).toHaveBeenCalledWith(
         {
@@ -182,7 +182,7 @@ describe('Driver Service', () => {
         status: 'APPROVED',
       });
 
-      const result = await driverService.acceptApplication(
+      const result = await driverApplicationService.acceptApplication(
         application.id,
         fakeAcceptDto(),
       );
@@ -205,7 +205,7 @@ describe('Driver Service', () => {
         fakeDriverApplication({ status: 'APPROVED' }),
       );
 
-      await driverService.acceptApplication('id', fakeAcceptDto());
+      await driverApplicationService.acceptApplication('id', fakeAcceptDto());
     });
   });
 
@@ -213,7 +213,7 @@ describe('Driver Service', () => {
     it('should throw if driver application is not found', async () => {
       driverApplicationRepository.findById.mockResolvedValue(null);
 
-      await expect(driverService.rejectApplication('app-id')).rejects.toThrow(
+      await expect(driverApplicationService.rejectApplication('app-id')).rejects.toThrow(
         'Driver application not found',
       );
     });
@@ -224,7 +224,7 @@ describe('Driver Service', () => {
       driverApplicationRepository.findById.mockResolvedValue(application);
 
       await expect(
-        driverService.rejectApplication(application.id),
+        driverApplicationService.rejectApplication(application.id),
       ).rejects.toThrow('Driver application is not pending');
     });
 
@@ -237,7 +237,7 @@ describe('Driver Service', () => {
         status: 'REJECTED',
       });
 
-      const result = await driverService.rejectApplication(application.id);
+      const result = await driverApplicationService.rejectApplication(application.id);
 
       expect(driverApplicationRepository.updateById).toHaveBeenCalledWith(
         application.id,

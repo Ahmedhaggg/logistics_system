@@ -14,7 +14,6 @@ export class TokenService {
     private readonly jwtService: JwtService,
     private readonly refreshTokenService: RefreshTokenService,
     private readonly userRepository: UserRepository,
-    private readonly userRoleRepository: UserRoleRepository,
   ) {}
 
   async generateTokenPair(user: User, roles: Role[]): Promise<TokenPair> {
@@ -26,14 +25,15 @@ export class TokenService {
 
   async validateAndRotateRefreshToken(
     token: string,
-  ): Promise<User & { roles: UserRole[] }> {
+  ) {
     const userId = await this.refreshTokenService.validateAndRotate(token);
 
-    const user = await this.userRepository.findById(userId);
+    const user = await this.userRepository.findUserAndRoles(userId);
 
     if (!user) throw new UnauthorizedException('User not found');
-    const roles = await this.userRoleRepository.findRolesByUserId(userId);
-    return { ...user, roles };
+    
+    console.log("user", user)
+    return user;
   }
 
   async revokeRefreshToken(token: string): Promise<void> {

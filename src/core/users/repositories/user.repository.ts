@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DB, injectDB } from '@db/provider';
-import { and, eq, SQL } from 'drizzle-orm';
+import { and, eq, SQL, sql } from 'drizzle-orm';
 import { User, InsertUser } from '../entities/user.entity';
 import { users, userRoles } from '@db/schema';
 import { Role } from '../entities/user_role.entity';
@@ -74,9 +74,29 @@ export class UserRepository {
         fullName: users.fullName,
       })
       .from(users)
-      .innerJoin(userRoles, eq(users.id, userRoles.userId))
-      .where(eq(userRoles.role, role));
-
+      .innerJoin(userRoles, eq(users.id, userRoles.userId));
     return result;
+  }
+  
+  async findUserAndRoles(userId: string) {
+    const result = await this.db
+      .select({
+        id: users.id,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+        imageUrl: users.imageUrl,
+        email: users.email,
+        phone: users.phone,
+        passwordHash: users.passwordHash,
+        fullName: users.fullName,
+        roles: sql<string[]>`coalesce(array_agg(${userRoles.role}), '{}')::text[]`,
+      })
+      .from(users)
+      .where(eq(users.id, userId))
+      .leftJoin(userRoles, eq(users.id, userRoles.userId))
+      .groupBy(users.id)
+      .limit(1);
+
+    return result[0];
   }
 }

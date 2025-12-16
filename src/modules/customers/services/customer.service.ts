@@ -1,11 +1,40 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserRepository } from '@core/users/repositories/user.repository';
 import { Role } from '@core/users/entities/user_role.entity';
 import { User } from '@core/users/entities/user.entity';
+import { OnboardCustomerDto } from '../dto/onboard-customer.dto';
+import { UserRoleRepository } from '@core/users/repositories/user-role.repository';
 
 @Injectable()
 export class CustomerService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly userRoleRepository: UserRoleRepository,
+  ) {}
+
+  async onboardCustomer(userId: string, dto: OnboardCustomerDto) {
+    try {
+      const user = await this.userRepository.findById(userId);
+
+      if (!user)
+        throw new NotFoundException(`User with ID ${userId} not found`);
+
+      await this.userRoleRepository.create({
+        userId,
+        role: Role.CUSTOMER,
+      });
+
+      user.phone = dto.phoneNumber;
+
+      await this.userRepository.updateById(userId, user);
+    } catch (error) {
+      throw new ConflictException('User already onboarded');
+    }
+  }
 
   async findAll(): Promise<User[]> {
     return this.userRepository.findByRole(Role.CUSTOMER);

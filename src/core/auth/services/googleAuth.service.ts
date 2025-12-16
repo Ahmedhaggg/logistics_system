@@ -14,7 +14,7 @@ export class GoogleAuthService {
 
   async login(
     googleUser: GoogleUserInfo,
-  ): Promise<User & { roles: UserRole[] }> {
+  ): Promise<User & { roles: UserRole[]; onboardingRequired: boolean }> {
     const email = googleUser.email;
 
     if (!email) throw new UnauthorizedException('Missing Google email');
@@ -28,14 +28,10 @@ export class GoogleAuthService {
         imageUrl: googleUser.picture,
         fullName: googleUser.name,
       });
-      await this.rolesRepository.create({
-        userId: user.id,
-        role: 'CUSTOMER',
-      });
     } else {
       roles = await this.rolesRepository.findRolesByUserId(user.id);
     }
 
-    return { ...user, roles };
+    return { ...user, roles, onboardingRequired: roles.length === 0 };
   }
 }

@@ -30,7 +30,7 @@
       "@test/*": ["test/*"]
     },
     "typeRoots": ["./node_modules/@types", "src/common/types"],
-    "types": ["jest", "node", "express"],
+    "types": ["jest", "node", "express", "multer"],
     "resolveJsonModule": true
   },
   "include": ["src"]

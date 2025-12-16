@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DriverService } from '../../services/driver.service';
+import { DriverApplicationService } from '../../services/driver-application.service';
 import { DriverRepository } from '../../repositories/driver.repository';
 import { DriverApplicationRepository } from '../../repositories/driver-application.repository';
 import { UserRepository } from '@core/users/repositories/user.repository';
@@ -13,8 +13,8 @@ import { drizzleProvider, DB } from '@db/provider';
 import { Role } from '@core/users/entities/user_role.entity';
 import { clearDb } from '@test/utils/db';
 
-describe('DriverService Integration', () => {
-  let service: DriverService;
+describe('DriverApplicationService Integration', () => {
+  let service: DriverApplicationService;
   let db: DB;
   let userRepository: UserRepository;
   let driverApplicationRepository: DriverApplicationRepository;
@@ -26,7 +26,7 @@ describe('DriverService Integration', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [SharedModule, DbModule],
       providers: [
-        DriverService,
+        DriverApplicationService,
         DriverRepository,
         DriverApplicationRepository,
         UserRepository,
@@ -35,7 +35,7 @@ describe('DriverService Integration', () => {
       ],
     }).compile();
 
-    service = module.get<DriverService>(DriverService);
+    service = module.get<DriverApplicationService>(DriverApplicationService);
     db = module.get<DB>(drizzleProvider);
     userRepository = module.get<UserRepository>(UserRepository);
     driverApplicationRepository = module.get<DriverApplicationRepository>(

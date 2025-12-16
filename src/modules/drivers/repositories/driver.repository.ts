@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { DB, injectDB } from '@db/provider';
 import { eq } from 'drizzle-orm';
-import { drivers } from '@db/schema';
+import { driverEmployeeRelations, drivers, employees } from '@db/schema';
 import { Driver, InsertDriver } from '../entities/driver.entity';
 import { DbTransaction } from '@db/transaction-manager';
+import { Employee } from '@module/employees/entities/employee.entity';
+import { User } from '@core/users/entities/user.entity';
 
 @Injectable()
 export class DriverRepository {
@@ -22,6 +24,7 @@ export class DriverRepository {
       .select()
       .from(drivers)
       .where(eq(drivers.id, id));
+    
     return result[0] ?? null;
   }
 
@@ -33,8 +36,18 @@ export class DriverRepository {
     return result[0] ?? null;
   }
 
-  async findAll(): Promise<Driver[]> {
-    return await this.db.select().from(drivers);
+  async findAll(): Promise<(Driver & {employee: Employee & { user: User }})[]> {
+    let result = await this.db.query.drivers.findMany({
+      with: {
+        employee: {
+          with: {
+            user: true,
+          }
+        },
+      },
+    })
+
+    return result;
   }
 
   async update(id: string, driver: Partial<Driver>): Promise<Driver | null> {

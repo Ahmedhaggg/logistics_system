@@ -12,6 +12,10 @@ import { DbTransaction } from '@db/transaction-manager';
 export class DriverApplicationRepository {
   constructor(@injectDB() private readonly db: DB) {}
 
+  async findAll(): Promise<DriverApplication[]> {
+    return this.db.select().from(driverApplications);
+  }
+  
   async findById(
     id: string,
     tx?: DbTransaction,

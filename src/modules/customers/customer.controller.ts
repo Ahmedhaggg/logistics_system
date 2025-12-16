@@ -6,6 +6,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Post,
+  Req,
 } from '@nestjs/common';
 import { CustomerService } from './services/customer.service';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -16,6 +18,8 @@ import { Role } from '@core/users/entities/user_role.entity';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { CurrentUser } from '@common/decorators/cuurentUser.decorator';
 import { JwtPayload } from '@common/types/jwtPayload.type';
+import { OnboardCustomerDto } from './dto/onboard-customer.dto';
+import { ApiBody } from '@nestjs/swagger';
 
 @ApiTags('Customers')
 @ApiBearerAuth()
@@ -23,6 +27,16 @@ import { JwtPayload } from '@common/types/jwtPayload.type';
 @Controller('customers')
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
+
+  // Onboard/register customer
+
+  @ApiBody({ type: OnboardCustomerDto })
+  @UseGuards(AuthGuard)
+  @Post('onboard')
+  async onboardCustomer(@Req() req, @Body() dto: OnboardCustomerDto) {
+    const userId = req.user.sub;
+    return this.customerService.onboardCustomer(userId, dto);
+  }
 
   @Get()
   @Roles(Role.MANAGER)

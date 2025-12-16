@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import {
   pgTable,
   uuid,
@@ -143,3 +144,20 @@ export const warehouseStaff = pgTable(
     uniqueStaffUser: unique('unique_warehouse_staff_user').on(table.employeeId),
   }),
 );
+
+
+
+// relationships
+export const driverEmployeeRelations = relations(drivers, ({ one }) => ({
+  employee: one(employees, {
+    fields: [drivers.employeeId],
+    references: [employees.id],
+  }),
+}));
+
+export const employeeUserRelations = relations(employees, ({ one }) => ({
+  user: one(users, {
+    fields: [employees.userId],
+    references: [users.id],
+  }),
+}));
