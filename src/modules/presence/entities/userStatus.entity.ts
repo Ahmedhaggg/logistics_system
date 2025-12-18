@@ -1,4 +1,4 @@
-import { users } from '@common/db/schema';
+import { users } from 'database/schema';
 import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 import { pgEnum, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
 
